@@ -21,6 +21,7 @@ import groupSelectionMenu from '../plugins/syncPlay/ui/groupSelectionMenu';
 import browser from './browser';
 import imageHelper from '../utils/image';
 import { getMenuLinks } from '../scripts/settings/webSettings';
+import { getServerMenuLinks } from './medialabUserMenu';
 import Dashboard, { pageClassOn } from '../utils/dashboard';
 import Events from '../utils/events.ts';
 import { getParameterByName } from '../utils/url.ts';
@@ -440,12 +441,14 @@ function updateLibraryMenu(user) {
 
     const customMenuOptions = document.querySelector('.customMenuOptions');
     if (customMenuOptions) {
-        getMenuLinks().then(links => {
-            links.forEach(link => {
+        // [ml-plugins] plus the links registered by server plugins (same tab)
+        Promise.all([getMenuLinks(), getServerMenuLinks(apiClient)]).then(([configLinks, serverLinks]) => {
+            [...configLinks, ...serverLinks].forEach(link => {
                 const option = document.createElement('a', 'emby-linkbutton');
                 option.classList.add('navMenuOption', 'lnkMediaFolder');
                 option.rel = 'noopener noreferrer';
-                option.target = '_blank';
+                // _self: a normal navigation (without a target, emby-linkbutton would hand the server path to the app router)
+                option.target = link.sameTab ? '_self' : '_blank';
                 option.href = link.url;
 
                 const icon = document.createElement('span');

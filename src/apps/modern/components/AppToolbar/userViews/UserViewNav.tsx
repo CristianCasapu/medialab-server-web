@@ -18,6 +18,7 @@ import { appRouter } from 'components/router/appRouter';
 import { useUserViews } from 'hooks/api/useUserViews';
 import { useApi } from 'hooks/useApi';
 import useCurrentTab from 'hooks/useCurrentTab';
+import { useServerMenuLinks } from 'hooks/useServerMenuLinks';
 import { useWebConfig } from 'hooks/useWebConfig';
 import globalize from 'lib/globalize';
 
@@ -62,6 +63,7 @@ const UserViewNav = () => {
     const collectionType = searchParams.get('collectionType');
     const { activeTab } = useCurrentTab();
     const { menuLinks } = useWebConfig();
+    const serverMenuLinks = useServerMenuLinks();
 
     const isExtraLargeScreen = useMediaQuery((t: Theme) => t.breakpoints.up('xl'));
     const isLargeScreen = useMediaQuery((t: Theme) => t.breakpoints.up('lg'));
@@ -79,8 +81,9 @@ const UserViewNav = () => {
 
     const navItems = useMemo(() => [
         ...(menuLinks || []),
+        ...serverMenuLinks,
         ...(userViews?.Items || [])
-    ], [ menuLinks, userViews ]);
+    ], [ menuLinks, serverMenuLinks, userViews ]);
 
     const {
         data: ancestors
@@ -143,7 +146,7 @@ const UserViewNav = () => {
                             startIcon={<Icon>{navItem.icon || 'link'}</Icon>}
                             component='a'
                             href={navItem.url}
-                            target='_blank'
+                            target={navItem.sameTab ? '_self' : '_blank'}
                             rel='noopener noreferrer'
                         >
                             {navItem.name}

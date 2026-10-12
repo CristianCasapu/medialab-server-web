@@ -15,6 +15,7 @@ import ListItemLink from 'components/ListItemLink';
 import { appRouter } from 'components/router/appRouter';
 import { useUserViews } from 'hooks/api/useUserViews';
 import { useApi } from 'hooks/useApi';
+import { useServerMenuLinks } from 'hooks/useServerMenuLinks';
 import { useWebConfig } from 'hooks/useWebConfig';
 import globalize from 'lib/globalize';
 
@@ -27,6 +28,8 @@ const MainDrawerContent = () => {
     const { data: userViewsData } = useUserViews({ userId: user?.Id });
     const userViews = userViewsData?.Items || [];
     const webConfig = useWebConfig();
+    const serverMenuLinks = useServerMenuLinks();
+    const menuLinks = [ ...(webConfig.menuLinks || []), ...serverMenuLinks ];
 
     const isHomeSelected = location.pathname === '/home' && (!location.search || location.search === '?tab=0');
 
@@ -56,11 +59,11 @@ const MainDrawerContent = () => {
             </List>
 
             {/* CUSTOM LINKS */}
-            {(!!webConfig.menuLinks && webConfig.menuLinks.length > 0) && (
+            {menuLinks.length > 0 && (
                 <>
                     <Divider />
                     <List>
-                        {webConfig.menuLinks.map(menuLink => (
+                        {menuLinks.map(menuLink => (
                             <ListItem
                                 key={`${menuLink.name}_${menuLink.url}`}
                                 disablePadding
@@ -68,7 +71,7 @@ const MainDrawerContent = () => {
                                 <ListItemButton
                                     component='a'
                                     href={menuLink.url}
-                                    target='_blank'
+                                    target={menuLink.sameTab ? '_self' : '_blank'}
                                     rel='noopener noreferrer'
                                 >
                                     <ListItemIcon>

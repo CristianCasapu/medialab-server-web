@@ -9,6 +9,8 @@ export interface MenuLink {
     name: string
     icon?: string
     url: string
+    /** [ml-plugins] Open in the same tab (links registered by server plugins). */
+    sameTab?: boolean
 }
 
 export interface WebConfig {
