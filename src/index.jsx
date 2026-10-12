@@ -40,6 +40,7 @@ import './components/playback/playerSelectionMenu';
 import './components/themeMediaPlayer';
 import './scripts/mouseManager';
 import './scripts/screensavermanager';
+import { loadServerWebScripts } from './scripts/medialabWebScripts';
 
 // Import site styles
 import './styles/site.scss';
@@ -125,6 +126,9 @@ build: ${__JF_BUILD_VERSION__}`);
 
     // Render the app
     await renderApp();
+
+    // [ml-plugins] Load the scripts server plugins add to the web client
+    loadServerWebScripts(serverUrl);
 
     // Load platform specific features
     loadPlatformFeatures();
