@@ -5,6 +5,7 @@ import type { AxiosRequestConfig } from 'axios';
 
 import { useApi } from 'hooks/useApi';
 
+import { getArrayResponseData, selectArray } from './arrayResponse';
 import { QueryKey } from './queryKey';
 
 const fetchPackages = async (
@@ -13,7 +14,7 @@ const fetchPackages = async (
 ) => {
     const response = await getPluginApi(api)
         .getPackages(options);
-    return response.data;
+    return getArrayResponseData(response.data, 'Packages');
 };
 
 export const getPackagesQuery = (
@@ -21,6 +22,7 @@ export const getPackagesQuery = (
 ) => queryOptions({
     queryKey: [ QueryKey.Packages ],
     queryFn: ({ signal }) => fetchPackages(api!, { signal }),
+    select: selectArray,
     enabled: !!api,
     staleTime: 15 * 60 * 1000 // 15 minutes
 });

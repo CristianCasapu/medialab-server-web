@@ -6,6 +6,7 @@ import type { AxiosRequestConfig } from 'axios';
 
 import { useApi } from 'hooks/useApi';
 
+import { getArrayResponseData, selectArray } from './arrayResponse';
 import { QueryKey } from './queryKey';
 
 const fetchConfigurationPages = async (
@@ -15,15 +16,16 @@ const fetchConfigurationPages = async (
 ) => {
     const response = await getPluginApi(api)
         .getConfigurationPages(params, options);
-    return response.data;
+    return getArrayResponseData(response.data, 'web/ConfigurationPages');
 };
 
-const getConfigurationPagesQuery = (
+export const getConfigurationPagesQuery = (
     api?: Api,
     params?: PluginApiGetConfigurationPagesRequest
 ) => queryOptions({
     queryKey: [ QueryKey.ConfigurationPages, params?.enableInMainMenu ],
     queryFn: ({ signal }) => fetchConfigurationPages(api!, params, { signal }),
+    select: selectArray,
     enabled: !!api
 });
 
