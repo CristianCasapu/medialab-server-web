@@ -5,12 +5,14 @@ import { useApi } from 'hooks/useApi';
 
 import { PluginCategory } from '../constants/pluginCategory';
 import type { PluginDetails } from '../types/PluginDetails';
+import { MEDIALAB_CATALOG_PREFIX } from '../types/PluginTrust';
 
 import { findBestConfigurationPage } from './configurationPage';
 import { findBestPluginInfo } from './pluginInfo';
 import { useConfigurationPages } from './useConfigurationPages';
 import { usePackages } from './usePackages';
 import { usePlugins } from './usePlugins';
+import { usePluginTrust } from './usePluginTrust';
 
 export const usePluginDetails = () => {
     const { api } = useApi();
@@ -32,6 +34,8 @@ export const usePluginDetails = () => {
         isError: isPluginsError,
         isPending: isPluginsPending
     } = usePlugins();
+
+    const { data: pluginTrust } = usePluginTrust();
 
     const pluginDetails = useMemo<PluginDetails[]>(() => {
         if (!isPackagesPending && !isPluginsPending) {
@@ -82,9 +86,18 @@ export const usePluginDetails = () => {
                         }
                     }
 
+                    const trust = pluginInfo ? pluginTrust?.find(t => (
+                        t.Id.replace(/-/g, '') === id.replace(/-/g, '') && t.Version === pluginInfo.Version
+                    ))?.Trust : undefined;
+                    const isMedialab = trust === 'Verified'
+                        || packageInfo?.owner === 'medialab.works'
+                        || !!packageInfo?.versions?.some(v => v.repositoryUrl?.startsWith(MEDIALAB_CATALOG_PREFIX));
+
                     return {
                         canUninstall: !!pluginInfo?.CanUninstall,
                         category,
+                        isMedialab,
+                        trust,
                         description: pluginInfo?.Description || packageInfo?.description || packageInfo?.overview,
                         id,
                         imageUrl: imageUrl || packageInfo?.imageUrl || undefined,
@@ -97,8 +110,10 @@ export const usePluginDetails = () => {
                         versions: packageInfo?.versions || []
                     };
                 })
-                .sort(({ name: nameA }, { name: nameB }) => (
-                    (nameA || '').localeCompare(nameB || '')
+                // medialab Server: medialab plugins first, then by name
+                .sort((a, b) => (
+                    Number(!!b.isMedialab) - Number(!!a.isMedialab)
+                    || (a.name || '').localeCompare(b.name || '')
                 ));
         }
 
@@ -108,6 +123,7 @@ export const usePluginDetails = () => {
         configurationPages,
         isPluginsPending,
         packages,
+        pluginTrust,
         plugins
     ]);
 

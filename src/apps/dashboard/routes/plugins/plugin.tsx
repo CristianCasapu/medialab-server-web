@@ -25,10 +25,12 @@ import { useEnablePlugin } from 'apps/dashboard/features/plugins/api/useEnablePl
 import { useInstallPackage } from 'apps/dashboard/features/plugins/api/useInstallPackage';
 import { usePackageInfo } from 'apps/dashboard/features/plugins/api/usePackageInfo';
 import { usePlugins } from 'apps/dashboard/features/plugins/api/usePlugins';
+import { usePluginTrust } from 'apps/dashboard/features/plugins/api/usePluginTrust';
 import { useUninstallPlugin } from 'apps/dashboard/features/plugins/api/useUninstallPlugin';
 import PluginDetailsTable from 'apps/dashboard/features/plugins/components/PluginDetailsTable';
 import PluginRevisions from 'apps/dashboard/features/plugins/components/PluginRevisions';
 import type { PluginDetails } from 'apps/dashboard/features/plugins/types/PluginDetails';
+import { MEDIALAB_CATALOG_PREFIX } from 'apps/dashboard/features/plugins/types/PluginTrust';
 
 import ConfirmDialog from 'components/ConfirmDialog';
 import Image from 'components/Image';
@@ -42,8 +44,8 @@ interface AlertMessage {
     messageKey: string
 }
 
-// Plugins from this url will be trusted and not prompt for confirmation when installing
-const TRUSTED_REPO_URL = 'https://repo.jellyfin.org/';
+// Plugins from these urls will be trusted and not prompt for confirmation when installing (medialab Server: + medialab catalog)
+const TRUSTED_REPO_URLS = [ 'https://repo.jellyfin.org/', MEDIALAB_CATALOG_PREFIX ];
 
 const PluginPage: FC = () => {
     const { api } = useApi();
@@ -83,6 +85,8 @@ const PluginPage: FC = () => {
         isPending: isPluginsLoading
     } = usePlugins();
 
+    const { data: pluginTrust } = usePluginTrust();
+
     const isLoading =
         isConfigurationPagesLoading || isPackageInfoLoading || isPluginsLoading;
 
@@ -108,8 +112,13 @@ const PluginPage: FC = () => {
                 imageUrl = api?.getUri(`/Plugins/${pluginInfo.Id}/${pluginInfo.Version}/Image`);
             }
 
+            const trust = pluginInfo ? pluginTrust?.find(t => (
+                t.Id.replace(/-/g, '') === pluginId.replace(/-/g, '') && t.Version === pluginInfo.Version
+            ))?.Trust : undefined;
+
             return {
                 canUninstall: !!pluginInfo?.CanUninstall,
+                trust,
                 description: pluginInfo?.Description || packageInfo?.description || packageInfo?.overview,
                 id: pluginId,
                 imageUrl: imageUrl || packageInfo?.imageUrl || undefined,
@@ -136,6 +145,7 @@ const PluginPage: FC = () => {
         packageInfo?.versions,
         pluginId,
         pluginName,
+        pluginTrust,
         plugins
     ]);
 
@@ -181,6 +191,15 @@ const PluginPage: FC = () => {
             alerts.push({ messageKey: 'MessageGetInstalledPluginsError' });
         }
 
+        // medialab Server: signature state (built-in plugins are part of the server and not listed)
+        if (pluginDetails?.trust === 'Verified') {
+            alerts.push({ severity: 'success', messageKey: 'MedialabVerifiedPlugin' });
+        } else if (pluginDetails?.trust === 'Modified') {
+            alerts.push({ severity: 'error', messageKey: 'MedialabModifiedPlugin' });
+        } else if (pluginDetails?.trust === 'Unsigned' && pluginDetails.canUninstall) {
+            alerts.push({ severity: 'info', messageKey: 'MedialabUnsignedPlugin' });
+        }
+
         return alerts;
     }, [
         disablePlugin.isError,
@@ -192,6 +211,7 @@ const PluginPage: FC = () => {
         isPluginsError,
         isPluginsLoading,
         pluginDetails?.canUninstall,
+        pluginDetails?.trust,
         uninstallPlugin.isError
     ]);
 
@@ -238,7 +258,7 @@ const PluginPage: FC = () => {
         const installVersion = version || pluginDetails.version;
         if (!installVersion) return;
 
-        if (!isConfirmed && !installVersion.repositoryUrl?.startsWith(TRUSTED_REPO_URL)) {
+        if (!isConfirmed && !TRUSTED_REPO_URLS.some(url => installVersion.repositoryUrl?.startsWith(url))) {
             console.debug('[PluginPage] plugin install needs confirmed', installVersion);
             setPendingInstallVersion(installVersion);
             setIsInstallConfirmOpen(true);

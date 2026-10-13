@@ -3,6 +3,7 @@ import React, { useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 
 import BaseCard from 'apps/dashboard/components/BaseCard';
+import globalize from 'lib/globalize';
 
 import { PluginDetails } from '../types/PluginDetails';
 
@@ -25,7 +26,12 @@ const PluginCard = ({ plugin }: PluginCardProps) => {
         <BaseCard
             title={plugin.name}
             to={pluginPage}
-            text={[plugin.version?.VersionNumber, plugin.status].filter(t => t).join(' ')}
+            text={[
+                plugin.version?.VersionNumber,
+                plugin.status,
+                plugin.trust === 'Verified' && `· ${globalize.translate('MedialabVerified')}`,
+                plugin.trust === 'Modified' && `· ⚠ ${globalize.translate('MedialabModifiedShort')}`
+            ].filter(t => t).join(' ')}
             image={plugin.imageUrl}
             icon={<ExtensionIcon sx={{ width: 80, height: 80 }} />}
         />
