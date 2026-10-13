@@ -1,0 +1,124 @@
+@use '../_base/theme' with (
+    // Theme options
+    $dark: true,
+
+    // Color palette
+    $background-default: #0b0e17,
+    $background-paper: #121826,
+    $primary-main: #6366f1,
+    $primary-dark: #4f46e5,
+    $primary-light: #818cf8,
+    $primary-hover: rgba(99, 102, 241, 0.2),
+    $primary-contrastText: #fff,
+    $text-primary: #f3f4f6,
+    $text-secondary: rgba(229, 231, 235, 0.72),
+    $action-focus: rgba(99, 102, 241, 0.32),
+    $action-hover: rgba(99, 102, 241, 0.14),
+    $divider: rgba(148, 163, 184, 0.16),
+
+    // Components
+    $appBar-defaultBg: #0e1220,
+    $filledInput-bg: rgba(148, 163, 184, 0.1),
+    $card-borderRadius: 0.4em,
+    $alert-infoFilledBg: #312e81,
+    $alert-infoFilledColor: #e0e7ff,
+    $button-inheritContainedBg: #1f2637,
+    $button-inheritContainedHoverBg: #2a3349,
+    $snackbarContent-bg: #1f2637,
+    $snackbarContent-color: #f3f4f6
+);
+
+/* Card background color variants (indigo / slate family) */
+.defaultCardBackground1 {
+    background-color: #312e81;
+}
+
+.defaultCardBackground2 {
+    background-color: #3730a3;
+}
+
+.defaultCardBackground3 {
+    background-color: #1e293b;
+}
+
+.defaultCardBackground4 {
+    background-color: #4338ca;
+}
+
+.defaultCardBackground5 {
+    background-color: #334155;
+}
+
+/* Detail ribbon on item details pages */
+.detailRibbon {
+    background: rgba(18, 24, 38, 0.85);
+
+    .layout-tv & {
+        background: none;
+    }
+}
+
+/*
+ * medialab accent for legacy elements whose Jellyfin blue (#00a4dc) is hard-coded upstream.
+ * Kept here (theme only) so the shared stylesheets stay identical to upstream.
+ */
+$ml-accent: #6366f1;
+$ml-accent-hover: rgba(99, 102, 241, 0.2);
+
+.mdl-slider {
+    color: $ml-accent;
+}
+
+.mdl-slider::-webkit-slider-thumb {
+    background: $ml-accent;
+}
+
+/* Separate rule: a browser drops a whole selector list with a vendor pseudo-element it does not know */
+.mdl-slider::-moz-range-thumb {
+    background: $ml-accent;
+}
+
+.mdl-radio__focus-circle,
+.iconOsdProgressInner,
+.mdl-switch__input:checked + .mdl-switch__label + .mdl-switch__trackContainer > .mdl-switch__thumb,
+.playbackProgress > div {
+    background: $ml-accent;
+}
+
+.sliderMarker.watched,
+progress[aria-valuenow]::before {
+    background-color: $ml-accent;
+}
+
+progress::-moz-progress-bar {
+    background-color: $ml-accent;
+}
+
+progress::-webkit-progress-value {
+    background-color: $ml-accent;
+}
+
+.mdl-radio.show-focus .mdl-radio__button:focus + .mdl-radio__circles .mdl-radio__outer-circle,
+.mdl-radio.show-focus .mdl-radio__button:focus + .mdl-radio__circles .mdl-radio__inner-circle {
+    color: $ml-accent;
+}
+
+.mdl-spinner__layer-1,
+.mdl-spinner__layer-2,
+.mdl-spinner__layer-3,
+.mdl-spinner__layer-4 {
+    border-color: $ml-accent;
+}
+
+.listItemImageButton:hover {
+    color: $ml-accent;
+    background: $ml-accent-hover;
+}
+
+.button-accent-flat {
+    color: $ml-accent !important;
+}
+
+.itemLinearProgress .MuiLinearProgress-bar {
+    background-color: $ml-accent !important;
+}

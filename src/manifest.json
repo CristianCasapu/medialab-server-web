@@ -4,8 +4,8 @@
     "lang": "en-US",
     "short_name": "medialab",
     "start_url": "index.html#/home",
-    "theme_color": "#101010",
-    "background_color": "#101010",
+    "theme_color": "#0b0e17",
+    "background_color": "#0b0e17",
     "display": "standalone",
     "icons": [
         {

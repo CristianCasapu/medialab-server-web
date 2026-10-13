@@ -5,6 +5,7 @@ import appletv from './appletv';
 import blueradiance from './blueradiance';
 import dark from './dark';
 import light from './light';
+import medialab from './medialab';
 import purplehaze from './purplehaze';
 import wmc from './wmc';
 
@@ -15,13 +16,14 @@ const DEFAULT_THEME = createTheme({
         colorSchemeSelector: '[data-theme="%s"]',
         disableCssColorScheme: true
     },
-    defaultColorScheme: 'dark',
+    defaultColorScheme: 'medialab',
     ...DEFAULT_THEME_OPTIONS,
     colorSchemes: {
         appletv,
         blueradiance,
         dark,
         light,
+        medialab,
         purplehaze,
         wmc
     }

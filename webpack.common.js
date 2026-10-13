@@ -48,6 +48,10 @@ const config = {
     },
     resolve: {
         extensions: ['.tsx', '.ts', '.js'],
+        // medialab Server: the medialab logos and favicons replace the Jellyfin ones (same file names)
+        alias: {
+            '@jellyfin/ux-web': path.resolve(__dirname, 'src/assets/img/medialab')
+        },
         modules: [
             path.resolve(__dirname, 'src'),
             path.resolve(__dirname, 'node_modules')
@@ -86,7 +90,7 @@ const config = {
                 'robots.txt',
                 {
                     from: 'touchicon*.png',
-                    context: path.resolve(__dirname, 'node_modules/@jellyfin/ux-web/favicons'),
+                    context: path.resolve(__dirname, 'src/assets/img/medialab/favicons'),
                     to: 'favicons'
                 },
                 ...Assets.map(asset => {
