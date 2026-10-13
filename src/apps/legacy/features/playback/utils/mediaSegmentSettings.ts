@@ -7,7 +7,9 @@ import { MediaSegmentAction } from '../constants/mediaSegmentAction';
 const PREFIX = 'segmentTypeAction';
 const DEFAULT_ACTIONS: Partial<Record<MediaSegmentType, MediaSegmentAction>> = {
     [MediaSegmentType.Intro]: MediaSegmentAction.AskToSkip,
-    [MediaSegmentType.Outro]: MediaSegmentAction.AskToSkip
+    [MediaSegmentType.Outro]: MediaSegmentAction.AskToSkip,
+    // medialab: recap-urile detectate (Smart Skip) intreaba implicit; utilizatorul le poate opri din setari
+    [MediaSegmentType.Recap]: MediaSegmentAction.AskToSkip
 };
 
 export const getId = (type: MediaSegmentType) => `${PREFIX}__${type}`;
